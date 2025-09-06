@@ -1,0 +1,32 @@
+// styles.module.scss для RenderDialogs
+.renderDialogs {
+  height: 100vh; // или нужная высота
+  overflow-y: auto; // включаем вертикальный скролл
+  scrollbar-width: thin; // для Firefox
+  scrollbar-color: #ccc transparent; // для Firefox
+  &::-webkit-scrollbar {
+    width: 6px; // тонкий скроллбар
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
+  .skeletonWrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .errorChatNotFound {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

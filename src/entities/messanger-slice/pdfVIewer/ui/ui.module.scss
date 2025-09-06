@@ -1,0 +1,57 @@
+.renderPages {
+  position: relative; // Относительное позиционирование
+  width: 50%;
+  height: 940px; // Высота PDF-контейнера
+  max-height: 950px;
+  padding: 16px;
+  background: #ebebeb;
+  overflow: hidden;
+  overflow-y: auto;
+  z-index: 1; // Установить z-index на 1, чтобы не перекрывать другие элементы
+  border-radius: 0 0 12px;
+
+  .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .chip {
+      width: 30%;
+      background: #fff;
+      padding: 12px 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 32px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+
+      &:hover {
+        filter: brightness(80%);
+      }
+    }
+  }
+}
+
+.btn {
+  border: none;
+  background: #ebebeb;
+  color: #757575;
+  padding: 12px 16px;
+  max-width: 50%;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 400;
+  cursor: pointer;
+  border-top: 2px solid #fff;
+  transition: all 0.2s;
+  border-radius: 8px 8px 0 0;
+  &:hover {
+    background-color: #cecece;
+  }
+}

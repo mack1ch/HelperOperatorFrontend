@@ -1,0 +1,45 @@
+.dialogCard {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  justify-content: space-between;
+  padding: 16px 20px;
+  gap: 16px;
+  transition: all 0.2s;
+  user-select: none;
+  width: 100%;
+  &:hover {
+    cursor: pointer;
+    filter: brightness(98%);
+  }
+  .dialogCard_textWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    .dialogCard_textWrap_heading {
+      color: #000;
+      font-size: 16px;
+    }
+    .dialogCard_textWrap_description {
+      color: #000;
+      font-size: 14px;
+    }
+  }
+  .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: #ff4d4f;
+    padding: 6px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 50%;
+  }
+}

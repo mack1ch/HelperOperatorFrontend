@@ -1,0 +1,37 @@
+.messenger {
+  display: flex;
+  flex-direction: column;
+
+  height: 100vh;
+
+  .messagesContainer {
+    flex: 1; /* занимает всё оставшееся место */
+    overflow-y: auto; /* вертикальная прокрутка */
+    width: 100%; /* на всю ширину */
+    padding: 78px 0 68px; /* отступы сверху и снизу под header/footer */
+    box-sizing: border-box;
+  }
+  .form {
+    border-top: 2px solid #ebebeb;
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    z-index: 10;
+    bottom: 0;
+    background: #fff;
+    padding: 10px; /* Добавьте отступы для удобства */
+    width: 100%;
+    .submitButton {
+      border: none;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 39px;
+      height: 39px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 4px;
+    }
+  }
+}
