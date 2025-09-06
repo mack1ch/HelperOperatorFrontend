@@ -5,19 +5,24 @@ import { Result, Skeleton } from "antd";
 import { DialogCard } from "@/features/messenger-slice/dialogCard";
 import { useOperatorIssues } from "../hooks/userOperatorIssues";
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = { onSelectIssue?: (issueId: string, authorId: string) => void };
 
 export const RenderDialogs = ({ onSelectIssue }: Props) => {
   const { issues, isLoading, hasIssues } = useOperatorIssues();
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleClick = useCallback(
     (issueId: string, authorId: string) => {
       setSelectedIssueId(issueId);
       onSelectIssue?.(issueId, authorId);
+
+      // пушим query в адресную строку
+      router.push(`/?issueId=${issueId}&authorId=${authorId}`);
     },
-    [onSelectIssue]
+    [onSelectIssue, router]
   );
 
   return (
