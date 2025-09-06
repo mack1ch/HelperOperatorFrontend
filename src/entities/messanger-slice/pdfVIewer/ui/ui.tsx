@@ -22,7 +22,6 @@ export const PDFViewerComponent = ({
       setSelectedDocumentID(docID);
     }
   };
-  console.log(documents);
   return (
     <>
       {Array.isArray(documents) && documents.length > 0 && (
@@ -43,23 +42,20 @@ export const PDFViewerComponent = ({
               {documents?.map((item, index) => {
                 if (item.fileLink) {
                   return (
-                    
-                      <Tooltip title={item.title} key={index}>
-                        <button
-                          onClick={() => handleDocumentIDChange(index)}
-                          style={{
-                            width: `calc(100% / ${documents.length} - 8px)`,
-                            background:
-                              index === selectedDocumentID ? "#333" : "#fff",
-                            color:
-                              index === selectedDocumentID ? "#fff" : "#222",
-                          }}
-                          className={styles.chip}
-                        >
-                          Документ № {index + 1}, страница {item.page! + 1}
-                        </button>
-                      </Tooltip>
-                    
+                    <Tooltip title={item.title} key={index}>
+                      <button
+                        onClick={() => handleDocumentIDChange(index)}
+                        style={{
+                          width: `calc(100% / ${documents.length} - 8px)`,
+                          background:
+                            index === selectedDocumentID ? "#333" : "#fff",
+                          color: index === selectedDocumentID ? "#fff" : "#222",
+                        }}
+                        className={styles.chip}
+                      >
+                        Документ № {index + 1}, страница {item.page! + 1}
+                      </button>
+                    </Tooltip>
                   );
                 } else if (item.link) {
                   return (
@@ -89,8 +85,25 @@ export const PDFViewerComponent = ({
                   const renderItem = documents[selectedDocumentID];
 
                   return (
-                    <>
-                      <object
+                    <object
+                      style={{
+                        width: "100%",
+                        height: "940px",
+                        overflowY: "auto",
+                        borderRadius: "12px",
+                      }}
+                      key={index}
+                      height="700"
+                      data={
+                        renderItem.fileLink
+                          ? `${renderItem.fileLink}#page=${
+                              (renderItem.page ?? 0) + 1
+                            }&toolbar=0&navpanes=0`
+                          : renderItem.link
+                      }
+                      type="application/pdf"
+                    >
+                      <iframe
                         style={{
                           width: "100%",
                           height: "940px",
@@ -98,35 +111,17 @@ export const PDFViewerComponent = ({
                           borderRadius: "12px",
                         }}
                         height="700"
-                        data={
+                        src={
                           renderItem.fileLink
                             ? `${renderItem.fileLink}#page=${
                                 (renderItem.page ?? 0) + 1
                               }&toolbar=0&navpanes=0`
                             : renderItem.link
                         }
-                        type="application/pdf"
                       >
-                        <iframe
-                          style={{
-                            width: "100%",
-                            height: "940px",
-                            overflowY: "auto",
-                            borderRadius: "12px",
-                          }}
-                          height="700"
-                          src={
-                            renderItem.fileLink
-                              ? `${renderItem.fileLink}#page=${
-                                  (renderItem.page ?? 0) + 1
-                                }&toolbar=0&navpanes=0`
-                              : renderItem.link
-                          }
-                        >
-                          <p>Ваш браузер не поддерживает PDF</p>
-                        </iframe>
-                      </object>
-                    </>
+                        <p>Ваш браузер не поддерживает PDF</p>
+                      </iframe>
+                    </object>
                   );
                 }
               })}
