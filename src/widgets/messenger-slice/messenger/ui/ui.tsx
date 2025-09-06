@@ -4,7 +4,7 @@ import styles from "./ui.module.scss";
 import { MessagesRender } from "@/features/messenger-slice/messagesRender";
 import { useChatHistory } from "../hooks/useChatHistory";
 import { useMessenger } from "../hooks/useMessenger";
-import { Input, Spin } from "antd";
+import { Input, Spin, Result } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import PlaneTilt from "../../../../../public/icons/messenger/paperPlaneTilt.svg";
 import Image from "next/image";
@@ -16,6 +16,8 @@ type Props = {
 };
 
 export const Messenger = ({ authorId, issueId }: Props) => {
+  const isChatSelected = Boolean(authorId && issueId);
+
   const { issue: historyIssue, isLoading: isHistoryLoading } = useChatHistory(
     authorId,
     issueId
@@ -31,47 +33,56 @@ export const Messenger = ({ authorId, issueId }: Props) => {
     sendMessage,
   } = useMessenger({ authorId, issueId });
 
-  // ✅ Кладём историю в стейт ТОЛЬКО в эффекте
   useEffect(() => {
-    if (historyIssue) {
-      setIssueFromHistory(historyIssue);
-    }
+    if (historyIssue) setIssueFromHistory(historyIssue);
   }, [historyIssue, setIssueFromHistory]);
 
-  // ✅ Мемоизируем массив для рендера сообщений
   const issuesToRender = useMemo(
     () => (visibleIssues.length ? visibleIssues : issues),
     [visibleIssues, issues]
   );
 
+  const isSubmittingDisabled = !isChatSelected || isLoading || isHistoryLoading;
+
   return (
     <div className={styles.messenger}>
       <div className={styles.messagesContainer}>
-        <MessagesRender issues={issuesToRender} />
+        {!isChatSelected ? (
+          <Result status="403" title="Выберите чат" />
+        ) : isHistoryLoading ? (
+          <div className={styles.loader}>
+            <Spin indicator={<LoadingOutlined spin />} size="large" />
+          </div>
+        ) : (
+          <MessagesRender issues={issuesToRender} />
+        )}
       </div>
 
       <form
         className={styles.form}
         onSubmit={(e) => {
           e.preventDefault();
-          sendMessage();
+          if (!isSubmittingDisabled) sendMessage();
         }}
       >
         <Input.Search
           value={messageValue}
           onChange={(e) => setMessageValue(e.target.value)}
-          onSearch={(val) => sendMessage(val)}
-          loading={isLoading || (!!issueId && isHistoryLoading)}
-          placeholder="Задайте свой вопрос"
+          onSearch={(val) => !isSubmittingDisabled && sendMessage(val)}
+          disabled={!isChatSelected}
+          loading={isLoading || (isChatSelected && isHistoryLoading)}
+          placeholder={
+            isChatSelected ? "Задайте свой вопрос" : "Сначала выберите чат"
+          }
           size="large"
           variant="borderless"
           enterButton={
-            isLoading ? (
-              <button disabled className={styles.submitButton}>
+            isSubmittingDisabled ? (
+              <button disabled className={styles.submitButton} aria-disabled>
                 <Spin indicator={<LoadingOutlined spin />} size="large" />
               </button>
             ) : (
-              <button className={styles.submitButton}>
+              <button className={styles.submitButton} aria-label="Отправить">
                 <Image src={PlaneTilt} width={24} height={24} alt="Submit" />
               </button>
             )

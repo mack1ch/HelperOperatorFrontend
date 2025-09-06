@@ -17,3 +17,18 @@ export const instance: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+// src/shared/api/fetcher.ts
+export async function fetcherForCharts<T>(
+  input: RequestInfo,
+  init?: RequestInit
+): Promise<T> {
+  const res = await fetch(input, {
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    ...init,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+  return res.json() as Promise<T>;
+}

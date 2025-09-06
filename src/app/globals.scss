@@ -1,3 +1,4 @@
+/* базовые */
 * {
   box-sizing: border-box;
   padding: 0;
@@ -9,15 +10,31 @@
 
 html,
 body {
-  max-width: 100vw;
   height: 100%;
-  overflow-x: hidden;
+  max-width: 100vw;
+  overflow: hidden; /* ❗ Полностью убираем скролл страницы */
 }
 
 body {
   background: #f0f0f0;
 }
 
+/* Контейнер приложения: занимает весь экран и не даёт вылезти переполнению */
+.app {
+  height: 100dvh; /* надёжно на мобилках */
+  display: grid;
+  grid-template-rows: auto 1fr; /* header = auto, main = остальное */
+  overflow: hidden; /* ❗ защита от скролла контейнера */
+}
+
+/* Main НЕ скроллится — скролл берут на себя вложенные компоненты */
+.main {
+  min-height: 0; /* важно, чтобы 1fr мог ужаться */
+  overflow: hidden; /* ❗ запрещаем скролл у main */
+  padding: 24px; /* оставляем ваш отступ */
+}
+
+/* остальное как было */
 a,
 a:link,
 a:visited {
@@ -25,13 +42,11 @@ a:visited {
   text-decoration: none;
   word-wrap: break-word;
 }
-
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
 }
-
 ul,
 ul li {
   list-style: none;

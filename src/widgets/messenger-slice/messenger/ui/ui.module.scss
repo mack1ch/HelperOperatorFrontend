@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
 
-  height: 100vh;
+  height: calc(100vh - 120px);
 
   .messagesContainer {
     flex: 1; /* занимает всё оставшееся место */
     overflow-y: auto; /* вертикальная прокрутка */
     width: 100%; /* на всю ширину */
-    padding: 78px 0 68px; /* отступы сверху и снизу под header/footer */
+
     box-sizing: border-box;
   }
   .form {

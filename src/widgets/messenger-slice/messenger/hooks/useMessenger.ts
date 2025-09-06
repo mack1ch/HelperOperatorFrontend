@@ -164,10 +164,6 @@ export function useMessenger({ authorId, issueId }: Params) {
       });
     });
 
-    s.on("connect_error", () => {
-      antdMessage.error("Не удалось подключиться к чату.");
-    });
-
     return () => {
       s.removeAllListeners();
       s.disconnect();

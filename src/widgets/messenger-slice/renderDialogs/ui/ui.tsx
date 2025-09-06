@@ -1,16 +1,25 @@
-// widgets/messenger-slice/renderDialogs.tsx
 "use client";
 
 import styles from "./ui.module.scss";
 import { Result, Skeleton } from "antd";
 import { DialogCard } from "@/features/messenger-slice/dialogCard";
 import { useOperatorIssues } from "../hooks/userOperatorIssues";
+import { useState, useCallback } from "react";
 
 type Props = { onSelectIssue?: (issueId: string, authorId: string) => void };
 
 export const RenderDialogs = ({ onSelectIssue }: Props) => {
   const { issues, isLoading, hasIssues } = useOperatorIssues();
-  console.log(issues);
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+
+  const handleClick = useCallback(
+    (issueId: string, authorId: string) => {
+      setSelectedIssueId(issueId);
+      onSelectIssue?.(issueId, authorId);
+    },
+    [onSelectIssue]
+  );
+
   return (
     <section className={styles.renderDialogs}>
       {isLoading ? (
@@ -29,7 +38,8 @@ export const RenderDialogs = ({ onSelectIssue }: Props) => {
             <DialogCard
               key={issue.issueId}
               issue={issue}
-              onClick={() => onSelectIssue?.(issue.issueId, issue.authorId)}
+              selected={issue.issueId === selectedIssueId}
+              onClick={handleClick}
             />
           ))}
         </div>

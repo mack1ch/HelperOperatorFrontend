@@ -1,0 +1,33 @@
+/* src/widgets/chart-table/ui/chart-table.module.scss */
+.wrap {
+  width: 100%;
+}
+
+.table {
+  :global(.ant-table) {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+.typeTag {
+  font-weight: 600;
+  text-transform: none;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.pctCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .pctValue {
+    font-variant-numeric: tabular-nums;
+    min-width: 48px;
+    text-align: right;
+  }
+}

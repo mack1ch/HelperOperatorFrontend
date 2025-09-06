@@ -1,0 +1,22 @@
+/* src/widgets/histogram/ui/ui.module.scss */
+.card {
+  border-radius: 12px;
+
+  :global(.ant-card-head-title) {
+    font-weight: 700;
+  }
+}
+
+.chartWrap {
+  width: 100%;
+  overflow: hidden;
+
+  .chartInner {
+    width: 100%;
+    min-height: 320px;
+  }
+}
+
+.emptyWrap {
+  padding: 32px 0;
+}

@@ -1,0 +1,66 @@
+/* src/widgets/issues-questions-table/ui/ui.module.scss */
+
+.wrap {
+  width: 100%;
+  margin: 48px 0;
+}
+
+.table {
+  :global(.ant-table) {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+.innerTable {
+  margin: 0 12px 12px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.subtle {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.qText {
+  white-space: pre-wrap;
+}
+
+.ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* две строки */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.attachmentLink {
+  word-break: break-all;
+}
+
+.qPreview {
+  padding: 8px 12px;
+  background: #fafafa;
+  border: 1px dashed #eaeaea;
+  border-radius: 8px;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0 8px;
+  font-weight: 600;
+}
+
+.linkRow {
+  margin-bottom: 6px;
+}
+
+.hint {
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}

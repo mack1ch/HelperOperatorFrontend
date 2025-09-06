@@ -11,8 +11,11 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/nextjs-registry": "^1.1.0",
-    "antd": "^5.27.2",
+    "@ant-design/plots": "^2.6.4",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "antd": "^5.27.3",
     "axios": "^1.11.0",
+    "clsx": "^2.1.1",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-cookie": "^8.0.1",
@@ -30,5 +33,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
 }

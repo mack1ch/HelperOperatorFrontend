@@ -11,5 +11,6 @@ export interface IMessage {
 export interface IDocument {
   fileLink: string;
   page?: number;
+  link?: string;
   title?: string;
 }

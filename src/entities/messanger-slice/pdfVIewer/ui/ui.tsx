@@ -5,6 +5,7 @@ import { useState } from "react";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { IDocument } from "@/shared/interface/message";
 import { Tooltip } from "antd";
+import Link from "next/link";
 
 export const PDFViewerComponent = ({
   documents,
@@ -21,7 +22,7 @@ export const PDFViewerComponent = ({
       setSelectedDocumentID(docID);
     }
   };
-
+  console.log(documents);
   return (
     <>
       {Array.isArray(documents) && documents.length > 0 && (
@@ -39,22 +40,48 @@ export const PDFViewerComponent = ({
             className={styles.renderPages}
           >
             <div className={styles.header}>
-              {documents?.map((item, index) => (
-                <Tooltip title={item.title} key={index}>
-                  <button
-                    onClick={() => handleDocumentIDChange(index)}
-                    style={{
-                      width: `calc(100% / ${documents.length} - 8px)`,
-                      background:
-                        index === selectedDocumentID ? "#333" : "#fff",
-                      color: index === selectedDocumentID ? "#fff" : "#222",
-                    }}
-                    className={styles.chip}
-                  >
-                    Документ № {index + 1}, страница {item.page! + 1}
-                  </button>
-                </Tooltip>
-              ))}
+              {documents?.map((item, index) => {
+                if (item.fileLink) {
+                  return (
+                    <>
+                      <Tooltip title={item.title} key={index}>
+                        <button
+                          onClick={() => handleDocumentIDChange(index)}
+                          style={{
+                            width: `calc(100% / ${documents.length} - 8px)`,
+                            background:
+                              index === selectedDocumentID ? "#333" : "#fff",
+                            color:
+                              index === selectedDocumentID ? "#fff" : "#222",
+                          }}
+                          className={styles.chip}
+                        >
+                          Документ № {index + 1}, страница {item.page! + 1}
+                        </button>
+                      </Tooltip>
+                    </>
+                  );
+                } else if (item.link) {
+                  return (
+                    <Tooltip title={item.title} key={index}>
+                      <Link
+                        target="_blank"
+                        href={item.link}
+                        onClick={() => handleDocumentIDChange(index)}
+                        style={{
+                          width: `calc(100% / ${documents.length} - 8px)`,
+                          background:
+                            index === selectedDocumentID ? "#333" : "#fff",
+                          color: index === selectedDocumentID ? "#fff" : "#222",
+                        }}
+                        className={styles.chip}
+                      >
+                        Материалы (ссылка)
+                      </Link>
+                    </Tooltip>
+                  );
+                }
+              })}
             </div>
             <div className={styles.main}>
               {documents.map((item, index) => {
@@ -72,10 +99,11 @@ export const PDFViewerComponent = ({
                         }}
                         height="700"
                         data={
-                          renderItem.fileLink +
-                          `#page=${
-                            (renderItem?.page ?? 0) + 1
-                          }#toolbar=0&navpanes=0`
+                          renderItem.fileLink
+                            ? `${renderItem.fileLink}#page=${
+                                (renderItem.page ?? 0) + 1
+                              }&toolbar=0&navpanes=0`
+                            : renderItem.link
                         }
                         type="application/pdf"
                       >
@@ -88,10 +116,11 @@ export const PDFViewerComponent = ({
                           }}
                           height="700"
                           src={
-                            renderItem.fileLink +
-                            `#page=${
-                              (renderItem?.page ?? 0) + 1
-                            }#toolbar=0&navpanes=0`
+                            renderItem.fileLink
+                              ? `${renderItem.fileLink}#page=${
+                                  (renderItem.page ?? 0) + 1
+                                }&toolbar=0&navpanes=0`
+                              : renderItem.link
                           }
                         >
                           <p>Ваш браузер не поддерживает PDF</p>

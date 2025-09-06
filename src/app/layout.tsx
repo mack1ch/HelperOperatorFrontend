@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.scss";
 import localFont from "next/font/local";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { AppLayout } from "@/shared/layouts/modalLayout/ui/ui";
+import { Header } from "@/entities/messanger-slice/header-slice/header";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const RF_Dewi = localFont({
   src: [
@@ -29,17 +30,23 @@ export const metadata: Metadata = {
   description: "Helper",
 };
 
+// app/layout.tsx
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="ru">
       <body className={RF_Dewi.className}>
         <AntdRegistry>
           <AppLayout>
-            <main>{children}</main>
+            <div className="app">
+              {" "}
+              {/* ⬅️ новый контейнер */}
+              <Header />
+              <main className="main">{children}</main>
+            </div>
           </AppLayout>
         </AntdRegistry>
       </body>

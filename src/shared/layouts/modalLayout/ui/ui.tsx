@@ -1,4 +1,3 @@
-// shared/layouts/modalLayout/ui/ui.tsx  (твой AppLayout)
 "use client";
 
 import { ConfigProvider, ThemeConfig } from "antd";
@@ -7,6 +6,7 @@ import styles from "./ui.module.scss";
 import { CookiesProvider } from "react-cookie";
 import { SWRConfig } from "swr";
 import { instance } from "@/shared/api";
+import "@ant-design/v5-patch-for-react-19";
 
 // универсальный fetcher под SWR: поддерживает ключ-строку и ключ-массив [url, params]
 async function swrFetcher(key: string | [string, Record<string, unknown>]) {
