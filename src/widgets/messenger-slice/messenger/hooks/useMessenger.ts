@@ -20,6 +20,11 @@ import { changeIssueClosingByID } from "../api";
 
 type Params = { authorId?: string; issueId?: string };
 
+type SocketMessage = Omit<IMessage, "id"> & {
+  id?: string;
+  messageId?: string;
+};
+
 export function useMessenger({ authorId, issueId }: Params) {
   // ---- state ----
   const [issues, setIssues] = useState<IIssue[]>([]);
@@ -45,8 +50,12 @@ export function useMessenger({ authorId, issueId }: Params) {
 
   // ---- helpers ----
   const sameIssueSnapshot = (a: IIssue, b: IIssue) => {
-    const aUp = a.updatedAt ? +new Date(a.updatedAt) : 0;
-    const bUp = b.updatedAt ? +new Date(b.updatedAt) : 0;
+    const aUp = a.updatedAt
+      ? +new Date(a.updatedAt as unknown as string | Date)
+      : 0;
+    const bUp = b.updatedAt
+      ? +new Date(b.updatedAt as unknown as string | Date)
+      : 0;
     if (aUp !== bUp) return false;
 
     const aLen = a.messages?.length ?? 0;
@@ -58,8 +67,8 @@ export function useMessenger({ authorId, issueId }: Params) {
       const lb = b.messages[bLen - 1];
       const laId = la?.id;
       const lbId = lb?.id;
-      const laTs = +new Date(la?.createdAt as any);
-      const lbTs = +new Date(lb?.createdAt as any);
+      const laTs = +new Date(la?.createdAt as unknown as string | Date);
+      const lbTs = +new Date(lb?.createdAt as unknown as string | Date);
       if (laId !== lbId || laTs !== lbTs) return false;
     }
     return true;
@@ -116,10 +125,10 @@ export function useMessenger({ authorId, issueId }: Params) {
     });
 
     // Порции сообщений / эхо
-    s.on("messageTextPart", (value: IMessage) => {
+    s.on("messageTextPart", (value: SocketMessage) => {
       if (issueId && value.issueId !== issueId) return;
 
-      const incomingId = (value as any).id ?? (value as any).messageId;
+      const incomingId = value.id ?? value.messageId;
 
       // Эхо нашего сообщения: снимаем лоадер и игнорим
       if (
@@ -135,6 +144,13 @@ export function useMessenger({ authorId, issueId }: Params) {
       // Обычный поток (AI / операторские ответы) — мержим + снимаем лоадер
       if (mountedRef.current) setIsLoading(false);
 
+      // Преобразуем SocketMessage в IMessage
+      const message: IMessage = {
+        ...value,
+        id: incomingId || uid(10), // fallback для id
+        createdAt: toDateStrict(value.createdAt),
+      };
+
       setIssues((prev) => {
         if (!prev.length) return prev;
         const idx = issueId
@@ -143,10 +159,7 @@ export function useMessenger({ authorId, issueId }: Params) {
         if (idx < 0) return prev;
 
         const next = [...prev];
-        next[idx] = appendOrMergeMessage(next[idx], {
-          ...value,
-          createdAt: toDateStrict(value.createdAt),
-        });
+        next[idx] = appendOrMergeMessage(next[idx], message);
         return next;
       });
     });
@@ -173,13 +186,18 @@ export function useMessenger({ authorId, issueId }: Params) {
 
         const last = issues[issues.length - 1];
         const res = await changeIssueClosingByID(last.issueId, shouldClose);
-        if (!(res as any)?.issueId) return;
 
-        setIssues((prev) => {
-          const next = [...prev];
-          next[next.length - 1] = normalizeIssue(res as IIssue);
-          return next;
-        });
+        // Handle the response with proper typing
+        if (res && typeof res === "object" && "issueId" in res) {
+          const issueResponse = res as IIssue;
+          if (!issueResponse.issueId) return;
+
+          setIssues((prev) => {
+            const next = [...prev];
+            next[next.length - 1] = normalizeIssue(issueResponse);
+            return next;
+          });
+        }
       } catch {
         // silent
       }

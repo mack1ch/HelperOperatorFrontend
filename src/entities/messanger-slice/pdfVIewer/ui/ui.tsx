@@ -74,8 +74,8 @@ export const PDFViewerComponent = ({
                         data={
                           renderItem.fileLink +
                           `#page=${
-                            renderItem?.page! + 1
-                          } + '#toolbar=0&navpanes=0`
+                            (renderItem?.page ?? 0) + 1
+                          }#toolbar=0&navpanes=0`
                         }
                         type="application/pdf"
                       >
@@ -90,8 +90,8 @@ export const PDFViewerComponent = ({
                           src={
                             renderItem.fileLink +
                             `#page=${
-                              renderItem?.page! + 1
-                            } + '#toolbar=0&navpanes=0'`
+                              (renderItem?.page ?? 0) + 1
+                            }#toolbar=0&navpanes=0`
                           }
                         >
                           <p>Ваш браузер не поддерживает PDF</p>

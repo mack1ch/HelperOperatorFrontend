@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { message as antdMessage } from "antd";
 import { io, Socket } from "socket.io-client";
 import { IIssue } from "@/shared/interface/issue";
 import { normalizeIssue, sortByUpdatedAsc } from "../model";

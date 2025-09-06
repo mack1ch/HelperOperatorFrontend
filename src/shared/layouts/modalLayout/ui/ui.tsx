@@ -9,7 +9,7 @@ import { SWRConfig } from "swr";
 import { instance } from "@/shared/api";
 
 // универсальный fetcher под SWR: поддерживает ключ-строку и ключ-массив [url, params]
-async function swrFetcher(key: string | [string, Record<string, any>]) {
+async function swrFetcher(key: string | [string, Record<string, unknown>]) {
   if (Array.isArray(key)) {
     const [url, params] = key;
     const { data } = await instance.get(url, { params, withCredentials: true });

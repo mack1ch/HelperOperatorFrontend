@@ -40,13 +40,23 @@ export function formatDateToDDMMYYYY(dateValue: Date): string {
 
 // Всегда возвращает Date, даже если вход мусор — удобно для IMessage.createdAt
 export const toDateStrict = (v: unknown): Date => {
-  const d = new Date(v as any);
-  return isNaN(+d) ? new Date() : d;
+  if (v instanceof Date) return v;
+  if (typeof v === "string" || typeof v === "number") {
+    const d = new Date(v);
+    return isNaN(+d) ? new Date() : d;
+  }
+  return new Date();
 };
 
 // Возвращает Date | undefined — для опциональных полей IIssue
 export const toDateOptional = (v: unknown): Date | undefined => {
   if (v == null) return undefined;
-  const d = new Date(v as any);
-  return isNaN(+d) ? undefined : d;
+
+  if (v instanceof Date) return v;
+  if (typeof v === "string" || typeof v === "number") {
+    const d = new Date(v);
+    return isNaN(+d) ? undefined : d;
+  }
+
+  return undefined;
 };
