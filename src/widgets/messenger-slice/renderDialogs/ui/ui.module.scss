@@ -1,7 +1,8 @@
 // styles.module.scss для RenderDialogs
 .renderDialogs {
-  height: 100vh; // или нужная высота
+  height: calc(100vh - 120px); // или нужная высота
   overflow-y: auto; // включаем вертикальный скролл
+  margin-right: 8px;
   scrollbar-width: thin; // для Firefox
   scrollbar-color: #ccc transparent; // для Firefox
   &::-webkit-scrollbar {
