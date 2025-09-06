@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-const BASE_URL = "https://api.rltorg.ru/";
+const BASE_URL = "https://api.rltorg.ru";
 
 export const fetcher = (url: string) =>
   fetch(BASE_URL + url, {
@@ -22,7 +22,7 @@ export async function fetcherForCharts<T>(
   input: RequestInfo,
   init?: RequestInit
 ): Promise<T> {
-  const res = await fetch(input, {
+  const res = await fetch(BASE_URL + input, {
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     ...init,
   });

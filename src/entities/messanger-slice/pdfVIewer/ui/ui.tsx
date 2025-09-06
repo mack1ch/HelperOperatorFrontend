@@ -43,7 +43,7 @@ export const PDFViewerComponent = ({
               {documents?.map((item, index) => {
                 if (item.fileLink) {
                   return (
-                    <>
+                    
                       <Tooltip title={item.title} key={index}>
                         <button
                           onClick={() => handleDocumentIDChange(index)}
@@ -59,7 +59,7 @@ export const PDFViewerComponent = ({
                           Документ № {index + 1}, страница {item.page! + 1}
                         </button>
                       </Tooltip>
-                    </>
+                    
                   );
                 } else if (item.link) {
                   return (

@@ -23,7 +23,10 @@ export const Header: React.FC = () => {
         {/* Логотип */}
         <div className={styles.header__logo}>
           <Link href="/" aria-label="На главную">
-            <span className={styles.header__brand}>
+            <span
+              style={{ display: "flex", alignItems: "center" }}
+              className={styles.header__brand}
+            >
               <Image
                 src="/assets/logos/roseltorg.webp"
                 alt="Росэлторг"

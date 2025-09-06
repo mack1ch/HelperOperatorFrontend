@@ -9,17 +9,9 @@ export type QuestionType =
   | "small_talk"
   | string;
 
-/** Строка для гистограммы ТОП-типов */
-export interface ITopQuestionTypeRow {
-  type: QuestionType;
-  count: number; // сколько раз встретился тип
-  correctPct?: number; // опционально — пригодится для тултипов
-  avgAnswerLength?: number;
-}
-
 /** Ответ API для ТОП-типов */
 export interface ITopQuestionTypesResponse {
-  items: ITopQuestionTypeRow[];
+  items: IQuestionStatRow[];
   generatedAt?: string;
 }
 

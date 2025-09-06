@@ -25,7 +25,11 @@ export const ChartTable = ({
   issueId,
   pageSize = 10,
 }: ChartTableProps) => {
-  const { data, isLoading, error } = useChartStats({ authorId, issueId });
+  const {
+    items: data,
+    isLoading,
+    error,
+  } = useChartStats({ authorId, issueId });
 
   const rows = dataSourceOverride ?? data;
 
