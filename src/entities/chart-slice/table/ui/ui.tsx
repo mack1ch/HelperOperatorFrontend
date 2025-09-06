@@ -41,7 +41,12 @@ export const ChartTable = ({
         key: "type",
         sorter: (a, b) => String(a.type).localeCompare(String(b.type)),
         render: (value: IQuestionStatRow["type"]) => (
-          <Tag className={styles.typeTag}>{value}</Tag>
+          <Tag
+            className={styles.typeTag}
+            style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+          >
+            {value}
+          </Tag>
         ),
         width: 240,
         fixed: "left",
