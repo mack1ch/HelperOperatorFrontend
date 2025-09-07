@@ -32,9 +32,9 @@ export type AttachmentType = "pdf" | "link";
 
 export interface IAttachment {
   id: string;
-  type: AttachmentType;
-  url: string; // для link и pdf (href до файла)
-  title?: string; // подпись (опционально)
+  type: "pdf" | "link" | "doc" | "image" | string;
+  url: string;
+  title?: string;
 }
 
 export interface IQuestionItem {

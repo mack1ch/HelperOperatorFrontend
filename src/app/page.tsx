@@ -1,13 +1,14 @@
 // app/(route)/page.tsx
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Messenger } from "@/widgets/messenger-slice/messenger";
 import { RenderDialogs } from "@/widgets/messenger-slice/renderDialogs";
 import styles from "./page.module.scss";
 
-export default function Home() {
+/** Внутренний компонент, который использует useSearchParams — он внутри Suspense */
+function HomeInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -16,12 +17,11 @@ export default function Home() {
   const issueId = searchParams.get("issueId") ?? undefined;
   const authorId = searchParams.get("authorId") ?? undefined;
 
-  // мемоизированный конструктор query-строки
+  // конструктор query-строки
   const buildQuery = useCallback(
     (next: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      const params = new URLSearchParams(searchParams.toString());
 
-      // обновляем/удаляем ключи
       Object.entries(next).forEach(([k, v]) => {
         if (v == null || v === "") params.delete(k);
         else params.set(k, v);
@@ -37,7 +37,7 @@ export default function Home() {
   const handleSelectIssue = useCallback(
     (nextIssueId: string, nextAuthorId: string) => {
       const url = buildQuery({ issueId: nextIssueId, authorId: nextAuthorId });
-      router.push(url); // если нужно без новой записи в истории — поменяй на router.replace(url)
+      router.push(url); // если не нужно добавлять в историю → router.replace(url)
     },
     [buildQuery, router]
   );
@@ -58,5 +58,13 @@ export default function Home() {
         <Messenger {...messengerProps} />
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div style={{ padding: 16 }}>Загрузка…</div>}>
+      <HomeInner />
+    </Suspense>
   );
 }

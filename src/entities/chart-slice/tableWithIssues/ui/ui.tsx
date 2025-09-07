@@ -42,7 +42,9 @@ const formatISO = (iso?: string) => (iso ? dtf.format(new Date(iso)) : "—");
 
 export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
   const router = useRouter();
+  // ⬇️ если нужно фильтровать списком — прокинь сюда authorId/issueId
   const { items, isLoading, error, mutate } = useIssuesQuestions();
+
   const [answerModal, setAnswerModal] = useState<AnswerModalState>({
     open: false,
   });
@@ -67,10 +69,10 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
     },
     [form]
   );
-
-  const closeAnswerModal = useCallback(() => {
-    setAnswerModal({ open: false });
-  }, []);
+  const closeAnswerModal = useCallback(
+    () => setAnswerModal({ open: false }),
+    []
+  );
 
   /** Отправка ручного ответа */
   const onSubmitAnswer = useCallback(async () => {
@@ -106,7 +108,7 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
     }
   }, [answerModal, closeAnswerModal, form, mutate]);
 
-  /** Верхняя (основная) таблица обращений */
+  /** Верхняя таблица обращений */
   const issueColumns: ColumnsType<IIssueSummary> = useMemo(
     () => [
       {
@@ -185,7 +187,7 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
     [goToChat]
   );
 
-  /** Фабрика колонок для вложенной таблицы вопросов (замыкаем issue) */
+  /** Вложенная таблица вопросов */
   const makeQuestionColumns = useCallback(
     (issue: IIssueSummary): ColumnsType<IQuestionItem> => [
       {
@@ -390,7 +392,7 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
   );
 };
 
-// Отключаем SSR для виджета, чтобы исключить расхождения гидрации с AntD
+// Отключаем SSR для виджета (AntD и aria/id на сервере)
 export default dynamic(() => Promise.resolve(IssuesQuestionsTable), {
   ssr: false,
 });

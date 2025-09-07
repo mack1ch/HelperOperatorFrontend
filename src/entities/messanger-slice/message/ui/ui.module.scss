@@ -30,3 +30,103 @@
     }
   }
 }
+
+/* Базовая стилизация markdown внутри пузыря */
+.messageText {
+  /* твои существующие стили пузыря */
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* параграфы — вертикальные интервалы поменьше */
+.mdP {
+  margin: 0 0 8px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mdStrong {
+  font-weight: 700;
+}
+.mdEm {
+  font-style: italic;
+}
+
+.mdUl,
+.mdOl {
+  margin: 0 0 8px 18px;
+  padding: 0;
+}
+.mdUl {
+  list-style: disc;
+}
+.mdOl {
+  list-style: decimal;
+}
+.mdLi {
+  margin: 2px 0;
+}
+
+.mdBlockquote {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-left: 3px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+}
+
+.mdLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+/* inline code */
+.mdCodeInline {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+/* code block */
+.mdCodeBlock {
+  margin: 8px 0;
+  pre {
+    background: #0f172a; /* слейт-900 */
+    color: #e5e7eb; /* серая-200 */
+    padding: 10px 12px;
+    border-radius: 8px;
+    overflow: auto;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+}
+
+/* таблицы */
+.mdTableWrap {
+  width: 100%;
+  overflow: auto;
+  margin: 8px 0;
+}
+.mdTable {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.mdTh,
+.mdTd {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 6px 8px;
+  vertical-align: top;
+}
+.mdThead .mdTh {
+  background: rgba(0, 0, 0, 0.04);
+  font-weight: 600;
+}

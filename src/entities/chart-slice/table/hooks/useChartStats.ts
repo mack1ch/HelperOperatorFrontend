@@ -18,20 +18,23 @@ export function useChartStats(params?: {
   issueId?: string;
 }) {
   // Стабильная сборка URL + query
+  const { authorId, issueId } = params ?? {};
+
   const key = useMemo(() => {
     const base = "/clusters_statistic";
-    if (!params || (!params.authorId && !params.issueId)) return base;
+    if (!authorId && !issueId) return base;
 
     const qs = new URLSearchParams();
-    if (params.authorId) qs.set("authorId", params.authorId);
-    if (params.issueId) qs.set("issueId", params.issueId);
+    if (authorId) qs.set("authorId", authorId);
+    if (issueId) qs.set("issueId", issueId);
 
-    // сортировка параметров для детерминированного ключа (на случай будущих добавлений)
+    // детерминированный порядок параметров
     const sorted = new URLSearchParams(
       Array.from(qs.entries()).sort(([a], [b]) => a.localeCompare(b))
     );
+
     return `${base}?${sorted.toString()}`;
-  }, [params?.authorId, params?.issueId]);
+  }, [authorId, issueId]);
 
   const { data, error, isLoading, isValidating, mutate } =
     useSWR<IQuestionStatsResponse>(
