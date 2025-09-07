@@ -41,34 +41,6 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     [message?.createdAt]
   );
 
-  const CodeBlock: React.FC<CodeProps> = ({ inline, className, children }) => {
-    const code = String(children ?? "").trim();
-
-    if (inline) {
-      return <code className={styles.mdCodeInline}>{code}</code>;
-    }
-
-    const match = /language-(\w+)/.exec(className ?? "");
-    const language = (match?.[1] || "markdown") as
-      | "javascript"
-      | "typescript"
-      | "json"
-      | "markdown";
-
-    return (
-      <div className={styles.mdCodeBlock}>
-        <SyntaxHighlighter
-          language={language}
-          style={githubStyle}
-          PreTag="div"
-          customStyle={{ margin: 0, background: "transparent" }}
-        >
-          {code}
-        </SyntaxHighlighter>
-      </div>
-    );
-  };
-
   const mdComponents: Components = {
     p: ({ children }) => <p className={styles.mdP}>{children}</p>,
     strong: ({ children }) => (

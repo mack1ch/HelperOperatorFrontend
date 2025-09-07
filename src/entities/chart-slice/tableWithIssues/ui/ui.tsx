@@ -10,17 +10,18 @@ import {
   Modal,
   Form,
   Input,
-  message as antdMessage,
   Table,
   Tag,
   Space,
   Tooltip,
   Card,
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import styles from "./ui.module.scss";
 import type { IIssueSummary, IQuestionItem } from "@/shared/interface/charts";
 import { useIssuesQuestions } from "../hooks/useIssuesQuestions";
+import { instance } from "@/shared/api"; // <-- проверь путь
 
 type Props = { pageSize?: number };
 
@@ -40,17 +41,21 @@ const dtf = new Intl.DateTimeFormat("ru-RU", {
 });
 const formatISO = (iso?: string) => (iso ? dtf.format(new Date(iso)) : "—");
 
+// расширяем локально тип вопроса, если бэкенд присылает messageId отдельно
+type QuestionWithMessage = IQuestionItem & { messageId?: string };
+
 export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
   const router = useRouter();
-  // ⬇️ если нужно фильтровать списком — прокинь сюда authorId/issueId
   const { items, isLoading, error, mutate } = useIssuesQuestions();
+  const [messageApi] = message.useMessage();
 
   const [answerModal, setAnswerModal] = useState<AnswerModalState>({
     open: false,
   });
+  const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
 
-  /** Переход на страницу чата с query-параметрами */
+  /** Переход в чат */
   const goToChat = useCallback(
     (issue: IIssueSummary) => {
       const url = `/?issueId=${encodeURIComponent(
@@ -74,39 +79,73 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
     []
   );
 
-  /** Отправка ручного ответа */
+  /** Отправка корректного ответа для неправильного вопроса */
   const onSubmitAnswer = useCallback(async () => {
     try {
       if (!answerModal.open) {
-        antdMessage.error("Модалка закрыта");
+        messageApi.error("Модалка закрыта");
         return;
       }
+
       const values = await form.validateFields();
+      const correctAnswer = String(values.answer).trim();
+      if (!correctAnswer) {
+        messageApi.warning("Введите ответ");
+        return;
+      }
+
+      const issue = answerModal.issue;
+      const q = answerModal.question as QuestionWithMessage;
+
+      // Бэкенд ожидает messageId — используем явный q.messageId или fallback на q.id
+      const messageId = q.messageId ?? q.id;
+
       const payload = {
-        issueId: answerModal.issue.issueId,
-        questionId: answerModal.question.id,
-        answer: String(values.answer),
-        links:
-          (values.links as Array<{ url: string; title?: string }>)?.filter(
-            (l) => Boolean(l?.url)
-          ) ?? [],
+        messageId,
+        issueId: issue.issueId,
+        authorId: issue.authorId,
+        correctAnswer,
       };
 
-      await fetch("/api/manual-answer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      setSaving(true);
+      await instance.post("/save_correct_answer", payload);
 
-      antdMessage.success("Ответ сохранён");
+      // Оптимистично пометим вопрос как верный локально
+      await mutate(
+        (prev) => {
+          if (!prev) return prev; // ничего не знаем — ничего не меняем
+
+          const updatedItems = prev.items.map((it) =>
+            it.issueId === issue.issueId
+              ? {
+                  ...it,
+                  questions: it.questions.map((qq) =>
+                    qq.id === q.id ? { ...qq, isCorrect: true } : qq
+                  ),
+                }
+              : it
+          );
+
+          return { ...prev, items: updatedItems }; // ВОЗВРАЩАЕМ ОБЪЕКТ, не массив
+        },
+        { revalidate: true, populateCache: true, rollbackOnError: true }
+      );
+
+      messageApi.success("Ответ сохранён");
       closeAnswerModal();
-      mutate();
     } catch (e: unknown) {
-      // @ts-expect-error antd validation error shape
-      if (e?.errorFields) return;
-      antdMessage.error("Не удалось сохранить ответ");
+      if (e && typeof e === "object" && "response" in e) {
+        const err = e as { response?: { data?: { message?: string } } };
+        messageApi.error(
+          err.response?.data?.message || "Не удалось сохранить ответ"
+        );
+      } else {
+        messageApi.error("Не удалось сохранить ответ");
+      }
+    } finally {
+      setSaving(false);
     }
-  }, [answerModal, closeAnswerModal, form, mutate]);
+  }, [answerModal, form, mutate, closeAnswerModal]);
 
   /** Верхняя таблица обращений */
   const issueColumns: ColumnsType<IIssueSummary> = useMemo(
@@ -231,7 +270,7 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
           q.attachments?.length ? (
             <Space direction="vertical" size={2}>
               {q.attachments.map((a) => (
-                <a
+                <Link
                   key={a.id}
                   href={a.url}
                   target="_blank"
@@ -239,7 +278,7 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
                   className={styles.attachmentLink}
                 >
                   {a.title ?? a.url}
-                </a>
+                </Link>
               ))}
             </Space>
           ) : (
@@ -316,6 +355,7 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
         title="Дать ответ на неправильный вопрос"
         okText="Сохранить"
         cancelText="Отмена"
+        confirmLoading={saving}
       >
         {answerModal.open && (
           <Form
@@ -342,49 +382,6 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
                 placeholder="Опишите корректный ответ для клиента"
               />
             </Form.Item>
-
-            <Form.List name="links">
-              {(fields, { add, remove }) => (
-                <>
-                  <div className={styles.listHeader}>
-                    <span>Ссылки (опционально)</span>
-                    <Button onClick={() => add()} type="link">
-                      + добавить
-                    </Button>
-                  </div>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <Space
-                      key={key}
-                      align="baseline"
-                      className={styles.linkRow}
-                    >
-                      <Form.Item
-                        {...restField}
-                        name={[name, "title"]}
-                        rules={[{ max: 80 }]}
-                      >
-                        <Input placeholder="Подпись" style={{ width: 220 }} />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        name={[name, "url"]}
-                        rules={[
-                          { type: "url", message: "Введите корректный URL" },
-                        ]}
-                      >
-                        <Input
-                          placeholder="https://..."
-                          style={{ width: 340 }}
-                        />
-                      </Form.Item>
-                      <Button onClick={() => remove(name)} type="link" danger>
-                        Удалить
-                      </Button>
-                    </Space>
-                  ))}
-                </>
-              )}
-            </Form.List>
           </Form>
         )}
       </Modal>
@@ -392,7 +389,6 @@ export const IssuesQuestionsTable = ({ pageSize = 10 }: Props) => {
   );
 };
 
-// Отключаем SSR для виджета (AntD и aria/id на сервере)
 export default dynamic(() => Promise.resolve(IssuesQuestionsTable), {
   ssr: false,
 });
